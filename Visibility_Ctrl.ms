@@ -9,6 +9,9 @@ struct Visibility_Ctrl
 		(
 			visibility_script = float_script()
 			script_val_string = "target_float"
+			ctrol_bone.pos.controller.x_position.controller = Float_Expression()
+			ctrol_bone.pos.controller.y_position.controller = Float_Expression()
+			ctrol_bone.pos.controller.z_position.controller = boolean_float()
 			target_track = ctrol_bone.pos.controller.z_position.controller
 			visibility_script.addTarget script_val_string target_track
 			visibility_script.setExpression script_val_string
