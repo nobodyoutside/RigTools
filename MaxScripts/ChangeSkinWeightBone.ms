@@ -1,7 +1,26 @@
 changeSkinWeightBone
+--
+-- 2021-07-26 11:46:36 version = 1.2
+--              맥스 2018에서  skinOps.GetBoneNode 함수가 없음 
+
 struct SH_SkinTool
 (
-    version = 1.1,
+    version = 1.2,
+    fn  GetMaxVersion  =
+    (
+        local  oldest  =  (maxversion())[1]/1000
+        if  oldest  <  12  then  oldest  =  12
+        validVersions  =  1998  +  oldest
+    ),
+    fn IsOldMaxVersion = (
+        -- 2020 이하 버전인지
+        isOldversion = False
+        v = GetMaxVersion()
+        if v < 2020 do (
+            isOldversion = true
+        )
+        isOldversion
+    ),
     fn UpDateWeightTool skinNode = (
         if skinOps.isWeightTableOpen skinNode do (
             skinOps.closeWeightTable skinNode
@@ -71,6 +90,31 @@ struct SH_SkinTool
                 skinOps.ReplaceVertexWeights skinModifier vert_index boneIndexArray weightValeArray
             )
         )
+    ),
+    fn GetBoneNodeByIndex skinMod boneIndex = (
+        -- 맥스 2018에서 작동이 안되는 현상이 발견되어서 수정
+        -- skinOps.GetBoneNode 함수가 없음
+        node = undefined
+        if IsOldMaxVersion() then (
+            boneName = skinOps.GetBoneName skinMod boneIndex 0
+            node = getNodeByName boneName
+        )else(
+            node = skinOps.GetBoneNode skinMod boneIndex
+        )
+        node
+    ),
+    fn GetBoneNodes skinMod = (
+        bones = #()
+        if IsOldMaxVersion() then (
+            maxBonesNum = skinOps.GetNumberBones skinMod
+            for boneNum = 1 to maxBonesNum do (
+                boneName = skinOps.GetBoneName skinMod boneNum 0
+                append bones (getNodeByName boneName)
+            )
+        )else(
+            bones = skinOps.GetBoneNodes skinNode
+        )
+        
     )
 )
 
@@ -156,7 +200,8 @@ rollout changeSkinWeightBone "SkinBone Tool" width:240
         skinNode = modPanel.getcurrentObject()
         if isSkinNode() do(
             bone_index = skinOps.GetSelectedBone skinNode
-            currentBoneNode = skinOps.GetBoneNode skinNode bone_index
+            currentBoneNode = SH_SkinTool.GetBoneNodeByIndex skinNode bone_index
+            -- currentBoneNode = skinOps.GetBoneNode skinNode bone_index
         )
         UpdateName()
     )
@@ -170,7 +215,8 @@ rollout changeSkinWeightBone "SkinBone Tool" width:240
         skinNode = modPanel.getcurrentObject()
         if isSkinNode() do(
             bone_index = skinOps.GetSelectedBone skinNode
-            newBoneNode = skinOps.GetBoneNode skinNode bone_index
+            -- newBoneNode = skinOps.GetBoneNode skinNode bone_index
+            newBoneNode = SH_SkinTool.GetBoneNodeByIndex skinNode bone_index
         )
         UpdateName()
     )
@@ -184,7 +230,8 @@ rollout changeSkinWeightBone "SkinBone Tool" width:240
             run_text.text = "실행 대기중..."
         )
         -- node가 유요한지 체크
-        bones = skinOps.GetBoneNodes skinNode
+        -- bones = skinOps.GetBoneNodes skinNode 버전분제로 수정
+        bones = SH_SkinTool.GetBoneNodes skinNode
         sel_vertx = skinOps.getSelectedVertices skinNode
         if enableSelect.state and sel_vertx.count == 0 do return (
             log_text.text = "선택한 버택스가 없습니다."
