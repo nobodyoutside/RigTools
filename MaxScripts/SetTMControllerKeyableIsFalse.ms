@@ -1,4 +1,5 @@
-﻿obj = $
+﻿-- 컨트롤러의 애니메이션 기능을 막는다
+obj = $
 for i = 1 to 3 do (
 	for ii = 1 to 3 do (
 		--obj.controller[i][ii].controller.keyable = false

@@ -29,7 +29,7 @@ boneLength_editWindow = rollout BoneLengthEdit "본 및 더미  길이 조정" w
 	)
 	on setBoneLength pressed do 
 	(
-		SetLengthlength_rnage.value
+		SetLength length_rnage.value
 	)
 	on length_rnage changed  val do 
 	(
