@@ -1,8 +1,9 @@
 changeSkinWeightBone
---
--- 2021-07-26 11:46:36 version = 1.2
---              맥스 2018에서  skinOps.GetBoneNode 함수가 없음 
-
+-- version = 1.2
+-- 2021-07-26 11:46:36 맥스 2018에서  skinOps.GetBoneNode 함수가 없음 
+-- 2021-07-27 12:24:38 struct 오류
+-- 2021-07-27 14:05:55 함수(GetBoneNodeByIndex 리턴) 오류
+-- 2021-07-27 18:45:51 버전오류( GetSelectedVertices 함수 추가)
 struct SH_SkinTool
 (
     version = 1.2,
@@ -15,7 +16,7 @@ struct SH_SkinTool
     fn IsOldMaxVersion = (
         -- 2020 이하 버전인지
         isOldversion = False
-        v = GetMaxVersion()
+        v = SH_SkinTool.GetMaxVersion()
         if v < 2020 do (
             isOldversion = true
         )
@@ -95,7 +96,7 @@ struct SH_SkinTool
         -- 맥스 2018에서 작동이 안되는 현상이 발견되어서 수정
         -- skinOps.GetBoneNode 함수가 없음
         node = undefined
-        if IsOldMaxVersion() then (
+        if SH_SkinTool.IsOldMaxVersion() then (
             boneName = skinOps.GetBoneName skinMod boneIndex 0
             node = getNodeByName boneName
         )else(
@@ -105,7 +106,7 @@ struct SH_SkinTool
     ),
     fn GetBoneNodes skinMod = (
         bones = #()
-        if IsOldMaxVersion() then (
+        if SH_SkinTool.IsOldMaxVersion() then (
             maxBonesNum = skinOps.GetNumberBones skinMod
             for boneNum = 1 to maxBonesNum do (
                 boneName = skinOps.GetBoneName skinMod boneNum 0
@@ -114,7 +115,21 @@ struct SH_SkinTool
         )else(
             bones = skinOps.GetBoneNodes skinNode
         )
-        
+        bones
+    ),
+    fn GetSelectedVertices skinMod = (
+        selectVertices = #()
+        if SH_SkinTool.IsOldMaxVersion() then (
+            vertex_num = skinOps.GetNumberVertices skinMod
+            for vert_index = 1 to vertex_num do (
+                if skinOps.IsVertexSelected skinMod vert_index == 1 do (
+                    append selectVertices vert_index
+                )
+            )
+        ) else(
+            selectVertices = skinOps.getSelectedVertices skinMod
+        )
+        selectVertices 
     )
 )
 
@@ -232,7 +247,7 @@ rollout changeSkinWeightBone "SkinBone Tool" width:240
         -- node가 유요한지 체크
         -- bones = skinOps.GetBoneNodes skinNode 버전분제로 수정
         bones = SH_SkinTool.GetBoneNodes skinNode
-        sel_vertx = skinOps.getSelectedVertices skinNode
+        sel_vertx = SH_SkinTool.GetSelectedVertices skinNode
         if enableSelect.state and sel_vertx.count == 0 do return (
             log_text.text = "선택한 버택스가 없습니다."
             run_text.text = "실행 대기중...")
