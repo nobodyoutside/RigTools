@@ -4,6 +4,7 @@ changeSkinWeightBone
 -- 2021-07-27 12:24:38 struct 오류
 -- 2021-07-27 14:05:55 함수(GetBoneNodeByIndex 리턴) 오류
 -- 2021-07-27 18:45:51 버전오류( GetSelectedVertices 함수 추가)
+--2021-07-30 12:02:10 skinMod 오타수정
 struct SH_SkinTool
 (
     version = 1.2,
@@ -113,7 +114,7 @@ struct SH_SkinTool
                 append bones (getNodeByName boneName)
             )
         )else(
-            bones = skinOps.GetBoneNodes skinNode
+            bones = skinOps.GetBoneNodes skinMod
         )
         bones
     ),
